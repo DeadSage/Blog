@@ -4,4 +4,8 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse('Ok')
+    return render(request, 'core/index.html')
+
+
+def topic_details(request, pk):
+    return render(request, 'core/topic_details.html')
