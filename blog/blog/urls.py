@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from core.views import index, topic_details
 
@@ -22,4 +22,5 @@ urlpatterns = [
     path('index/', index, name='index'),
     path(r'topic/(?P<pk>\d+)/$', topic_details, name='topic_details'),
     path('admin/', admin.site.urls),
+    path('form/', include('formdum.urls')),
 ]
