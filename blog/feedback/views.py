@@ -2,29 +2,25 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse
 from django.views import View
+from django.views.generic.edit import CreateView
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
-from formdum.forms import DummForm
-from formdum.schemas import REVIEW_SCHEMA, ReviewSchema
+from feedback.forms import DummForm
+from feedback.schemas import REVIEW_SCHEMA, ReviewSchema
+from django.contrib.auth.mixins import LoginRequiredMixin
 from marshmallow.exceptions import ValidationError as MarshError
+from .models import Feedback
 
 
 # Create your views here.
-class FormDummView(View):
-    def get(self, request):
-        form = DummForm()
-        return render(request, 'form.html', context={
-            'form': form
-        })
+class FeedbackCreateView(LoginRequiredMixin, CreateView):
+    model = Feedback
+    fields = ['text', 'grade', 'subject']
+    success_url = '/feedback/add'
 
-    def post(self, request):
-        form = DummForm(request.POST)
-        if form.is_valid():
-            context = form.cleaned_data
-            return render(request, 'form.html', context)
-        else:
-            return render(request, 'error.html', {'errors': form.errors})
-
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 class SchemaView(View):
     def post(self, request):
