@@ -5,5 +5,5 @@ from formdum import views
 from core.views import index, topic_details
 
 urlpatterns = [
-    path('', views.FormDummView.as_view()),
+    path('', views.SchemaView.as_view()),
 ]
