@@ -1,3 +1,6 @@
+from marshmallow import Schema, fields
+from marshmallow.validate import Range, Length
+
 REVIEW_SCHEMA = {
     '$schema': ' http://json-schema.org/schema# ',
     'type': 'object',
@@ -14,3 +17,8 @@ REVIEW_SCHEMA = {
         },
     },
     'required': ['feedback', 'grade'], }
+
+
+class ReviewSchema(Schema):
+    feedback = fields.Str(validate=Length(3, 10))
+    grade = fields.Int(validate=Range(1, 100))

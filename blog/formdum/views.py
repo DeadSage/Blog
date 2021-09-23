@@ -5,7 +5,8 @@ from django.views import View
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from formdum.forms import DummForm
-from schemas import REVIEW_SCHEMA
+from formdum.schemas import REVIEW_SCHEMA, ReviewSchema
+from marshmallow.exceptions import ValidationError as MarshError
 
 
 # Create your views here.
@@ -35,3 +36,16 @@ class SchemaView(View):
             return JsonResponse({'errors': 'Invalid JSON'}, status=400)
         except ValidationError as exc:
             return JsonResponse({'errors': exc.message}, status=400)
+
+
+class MarshView(View):
+    def post(self, request):
+        try:
+            document = json.loads(request.body)
+            schema = ReviewSchema(strict=True)
+            data = schema.load(document)
+            return JsonResponse(data, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({'errors': 'Invalid JSON'}, status=400)
+        except MarshError as exc:
+            return JsonResponse({'errors': exc.messages}, status=400)
