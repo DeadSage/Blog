@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views import View
 from django.views.generic.edit import CreateView
+from django.views.generic import ListView
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from feedback.forms import DummForm
@@ -21,6 +22,15 @@ class FeedbackCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class FeedbackListView(LoginRequiredMixin, ListView):
+    model = Feedback
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Feedback.objects.all()
+        return Feedback.objects.filter(author=self.request.user)
 
 class SchemaView(View):
     def post(self, request):
